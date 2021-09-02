@@ -15,5 +15,5 @@ s.listen(5)                                           #5 connections max
 while True:
     clientsocket, address = s.accept()                #store the client socket + ipv4 address 
     print(f"Connection from {address} has been established !!!")
-    msg = clientsocket.recv(1024)                     #get what client sended to us
-    print(msg.decode("utf-8"))                        #print what the client sended to us 
+    msg = clientsocket.recv(1024)                       #get what client sended to us
+    print(msg.decode("utf-8"),end="\n")               #print what the client sended to us 
